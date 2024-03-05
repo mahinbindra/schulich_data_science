@@ -62,6 +62,32 @@ print(f"Number of decision variables: {model.NumVars}")
 sum_decision_variables = sum(v.x for v in model.getVars())
 print(f"Sum of decision variables: {sum_decision_variables}")
 
+#PART E
+# Number of nonprofits
+N = len(df)
+
+# Decision variables for allocation 'a' and auxiliary variable 'x'
+a = model.addVars(N, lb=0, vtype=GRB.CONTINUOUS, name="a")
+x = model.addVars(N, lb=0, vtype=GRB.CONTINUOUS, name="x")  # Variable for fractional exponent
+
+# Constraints
+# Budget Constraint
+model.addConstr(gp.quicksum(a[i] for i in range(N)) <= budget, "Budget")
+
+# Power constraints
+for i in range(N):
+    model.addGenConstrPow(a[i], x[i], 2.0/3.0, f"PowConstraint_{i}")
+
+# Number of decision variables (2 for each nonprofit, a and x)
+num_decision_variables = model.NumVars
+
+# Number of constraints (1 budget constraint + N power constraints)
+num_constraints = model.NumConstrs
+
+print(f"Number of decision variables: {num_decision_variables}")
+print(f"Number of constraints: {num_constraints}")
+
+
 #PART F
 # Assuming model has been optimized and x_i are the decision variables for the output
 output_value = sum(2 * x[i].x for i in range(N))
