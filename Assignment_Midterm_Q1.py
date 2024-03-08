@@ -64,4 +64,35 @@ if model.Status == GRB.OPTIMAL:
 else:
     print("No optimal solution found.")
 
+#PART E
+optimal_cost = model.ObjVal if model.Status == GRB.OPTIMAL else None
+
+#PART F
+halal_proportion = sum(food_quantities[food].X for food in food_items if 'Halal' in food) / sum(food_quantities[food].X for food in food_items)
+kosher_proportion = sum(food_quantities[food].X for food in food_items if 'Kosher' in food) / sum(food_quantities[food].X for food in food_items)
+
+#PART G and H
+# Remove Variety constraints
+model.remove(model.getConstrs()[-len(food_items):])
+model.optimize()
+
+# Calculate the new cost and compare
+new_cost = model.ObjVal
+cost_difference = new_cost - optimal_cost
+
+#PART I
+# Increase the dietary preference constraints
+for preference in dietary_preferences:
+    dietary_totals[preference] += 10000  # increase each by 10,000 grams
+    model.getConstrByName(f"Total_{preference}").RHS = dietary_totals[preference]
+
+model.optimize()
+adjusted_cost = model.ObjVal
+
+#PART J
+# Assuming you have the reduced costs from the sensitivity analysis after optimization
+reduced_cost_first_food = food_quantities[food_items[0]].RC
+
+# The cost reduction needed for the first food to be included in the solution
+cost_reduction_needed = cost_per_gram[0] - reduced_cost_first_food
 

@@ -12,7 +12,7 @@ beta = df['beta_i'].tolist()
 budget = 50000000
 
 # Create a new model
-model = gp.Model('NonprofitFunding')
+model = gp.Model('Funding')
 
 # Number of nonprofits
 N = len(df)
